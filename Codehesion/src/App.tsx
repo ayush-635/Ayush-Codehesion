@@ -18,13 +18,13 @@ function AppContent(){
 
   return (
     <BrowserRouter>
-    <nav>
-      <Link to="/home">Home and Categories</Link>
-      <Link to="/register">Invite or register</Link>
+    <nav style={{ padding: '10x', background: '#eee', display: 'flex', gap: '15px' }}>
+      <Link to="/home">Categories</Link>
+      <Link to="/register">Invite to register</Link>
       {token ? (
-        <button onClick={logout}>Logout</button>
+        <button onClick={logout} style={{ marginLeft: 'auto' }}>Logout</button>
       ) : (
-        <Link to="/login">Login</Link>
+        <Link to="/login" style={{ marginLeft: 'auto' }}>Login</Link>
       )}
     </nav>
 

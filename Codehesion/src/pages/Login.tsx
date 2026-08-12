@@ -42,9 +42,9 @@ export const Login = () => {
     });
 
     return (
-        <div>
+        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' }}>
             <h2>Login</h2>
-            {formik.status && <p>{formik.status}</p>}
+            {formik.status && <p style={{ color: 'red' }}>{formik.status}</p>}
             <form onSubmit={formik.handleSubmit}>
                 <div>
                     <label>Username or email</label>
@@ -53,6 +53,7 @@ export const Login = () => {
                       type="text"
                       onChange={formik.handleChange}
                       value={formik.values.username}
+                      style={{ width:'100%', marginBottom: '10px', padding: '8px' }}
                       required
                     />
                 </div>
@@ -63,10 +64,11 @@ export const Login = () => {
                       type="password"
                       onChange={formik.handleChange}
                       value={formik.values.password}
+                      style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
                       required
                     />
                 </div>
-                <button type="submit" disabled={formik.isSubmitting}>
+                <button type="submit" disabled={formik.isSubmitting} style={{ padding: '10px 20px'}}>
                     {formik.isSubmitting ? 'Logging you in' : 'Login'}
                 </button>
             </form>
