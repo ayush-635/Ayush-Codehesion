@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { CategoryWordsView, Home } from './pages/Home';
 import { Profile } from './pages/Profile';
+import { Tags } from './pages/Tags';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -20,6 +21,7 @@ function AppContent(){
       <Link to="/home">Categories</Link>
       <Link to="/register">Invite to register</Link>
       <Link to="/profile">Update profile</Link>
+      <Link to="/tags">Tags CRUD</Link>
       
       {token ? (
         <button onClick={logout} style={{ marginLeft: 'auto' }}>Logout</button>
@@ -57,6 +59,7 @@ function AppContent(){
           </ProtectedRoute>
         } 
       />
+      <Route path="/tags" element={<ProtectedRoute><Tags /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
