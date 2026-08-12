@@ -1,12 +1,10 @@
 import React from 'react';
-import { RouterProvider } from 'react-router/dom';
-import ErrorBoundary from './components/ErrorBoundary';
-import router from './router';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import { CategoryWordsView, Home } from './pages/Home'
+import { CategoryWordsView, Home } from './pages/Home';
+import { Profile } from './pages/Profile';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -18,9 +16,11 @@ function AppContent(){
 
   return (
     <BrowserRouter>
-    <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px' }}>
+    <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px', alignItems: 'center' }}>
       <Link to="/home">Categories</Link>
       <Link to="/register">Invite to register</Link>
+      <Link to="/profile">Update profile</Link>
+      
       {token ? (
         <button onClick={logout} style={{ marginLeft: 'auto' }}>Logout</button>
       ) : (
@@ -30,6 +30,7 @@ function AppContent(){
 
     <Routes>
       <Route path="/login" element={<Login />} />
+      
       <Route
         path="/register"
         element={
@@ -38,8 +39,6 @@ function AppContent(){
           </ProtectedRoute>
         }
       />
-
-      {}
       <Route
         path="/home"
         element={
@@ -48,9 +47,16 @@ function AppContent(){
           </ProtectedRoute>
         }
       >
-        {}
         <Route path="categories/:categoryId" element={<CategoryWordsView />} />
-      </Route> {}
+      </Route>
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
