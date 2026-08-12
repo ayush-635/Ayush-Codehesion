@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/authContext';
-
-interface Word {
-  id: number;
-  name: string;
-}
+import { Link, Outlet, useParams } from 'react-router-dom';
 
 interface Category {
   id: number;
   name: string;
-  words?: Word[];
 }
 
 export const Home = () => {
@@ -18,8 +13,7 @@ export const Home = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [wordsLoading, setWordsLoading] = useState<boolean>(false);
+  const { categoryId } = useParams();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -30,95 +24,108 @@ export const Home = () => {
         );
         if (response.data && Array.isArray(response.data.data)) {
           setCategories(response.data.data);
-        } else {
-          setCategories([]);
         }
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load categories');
+        setError(err.response?.data?.message || 'Failed to load categories.');
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchCategories();
-    }
+    if (token) fetchCategories();
   }, [token]);
-
-  const handleCategoryClick = async (category: Category) => {
-    setSelectedCategory(category);
-    setWordsLoading(true);
-    
-    try {
-      // Postman route:     /v1/admin/categories/:id
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/v1/admin/categories/${category.id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const fullCategoryData = response.data.data || response.data;
-      
-      setSelectedCategory(fullCategoryData);
-    } catch (err: any) {
-      console.error("Failed to fetch words for category", err);
-    } finally {
-      setWordsLoading(false);
-    }
-  };
 
   if (loading) return <p style={{ padding: '20px' }}>Loading</p>;
   if (error) return <p style={{ padding: '20px', color: 'red' }}>{error}</p>;
 
   return (
     <div style={{ display: 'flex', gap: '30px', padding: '20px', fontFamily: 'sans-serif' }}>
-      {}
+      { }
       <div style={{ flex: 1 }}>
-        <h3>Categories</h3>
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {categories.map((category) => (
-            <li 
-              key={category.id} 
-              onClick={() => handleCategoryClick(category)}
-              style={{
-                padding: '12px',
-                margin: '6px 0',
-                background: selectedCategory?.id === category.id ? '#d1e7dd' : '#f8f9fa',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: selectedCategory?.id === category.id ? 'bold' : 'normal'
-              }}
-            >
-              {category.name}
+        <h3>Categories Navigation</h3>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {categories.map((category) => {
+            const isActive = Number(categoryId) === category.id;
+            return (
+              <Link
+                key={category.id}
+                to={`/home/categories/${category.id}`}
+                style={{
+                  padding: '12px',
+                  background: isActive ? '#d1e7dd' : '#f8f9fa',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  color: '#333',
+                  fontWeight: isActive ? 'bold' : 'normal'
+                }}
+              >
+                {category.name}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      { }
+      <div style={{ flex: 1, background: '#fafafa', padding: '15px', borderRadius: '6px', border: '1px solid #eee' }}>
+        <Outlet />
+      </div>
+    </div>
+  );
+};
+
+interface Word {
+  id: number;
+  name: string;
+}
+
+export const CategoryWordsView = () => {
+  const { token } = useAuth();
+  const { categoryId } = useParams();
+  const [categoryName, setCategoryName] = useState<string>('');
+  const [words, setWords] = useState<Word[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchWords = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/v1/admin/categories/${categoryId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const fullData = response.data.data || response.data;
+        setCategoryName(fullData.name || '');
+        setWords(fullData.words || []);
+      } catch (err) {
+        console.error("Failed loading category dynamic parameters", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token && categoryId) {
+      fetchWords();
+    }
+  }, [categoryId, token]);
+
+  if (loading) return <p style={{ color: '#666' }}>Navigating details</p>;
+
+  return (
+    <div>
+      <h4>Words inside "{categoryName}"</h4>
+      {words.length > 0 ? (
+        <ul style={{ paddingLeft: '20px' }}>
+          {words.map((word) => (
+            <li key={word.id} style={{ margin: '8px 0', fontSize: '1.1rem', color: '#333' }}>
+              {word.name} (ID: {word.id})
             </li>
           ))}
         </ul>
-      </div>
-
-      {}
-      <div style={{ flex: 1, background: '#fafafa', padding: '15px', borderRadius: '6px', border: '1px solid #eee' }}>
-        <h3>Nested Words Structure</h3>
-        
-        {wordsLoading ? (
-          <p style={{ color: '#666' }}>Fetching words</p>
-        ) : selectedCategory ? (
-          <div>
-            <h4>Words inside "{selectedCategory.name}"</h4>
-            {selectedCategory.words && selectedCategory.words.length > 0 ? (
-              <ul style={{ paddingLeft: '20px' }}>
-                {selectedCategory.words.map((word) => (
-                  <li key={word.id} style={{ margin: '8px 0', fontSize: '1.1rem', color: '#333' }}>
-                    {word.name} (ID: {word.id})
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p style={{ color: '#777', fontStyle: 'italic' }}>Nothing found</p>
-            )}
-          </div>
-        ) : (
-          <p style={{ color: '#888' }}>Select a category on the left to see its words</p>
-        )}
-      </div>
+      ) : (
+        <p style={{ color: '#777', fontStyle: 'italic' }}>No words found </p>
+      )}
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import { Home } from './pages/Home'
+import { CategoryWordsView, Home } from './pages/Home'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -18,7 +18,7 @@ function AppContent(){
 
   return (
     <BrowserRouter>
-    <nav style={{ padding: '10x', background: '#eee', display: 'flex', gap: '15px' }}>
+    <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px' }}>
       <Link to="/home">Categories</Link>
       <Link to="/register">Invite to register</Link>
       {token ? (
@@ -39,16 +39,19 @@ function AppContent(){
         }
       />
 
+      {}
       <Route
         path="/home"
         element={
           <ProtectedRoute>
-            <div>
-              <Home />
-            </div>
+            <Home />
           </ProtectedRoute>
         }
-      />
+      >
+        {}
+        <Route path="categories/:categoryId" element={<CategoryWordsView />} />
+      </Route> {}
+
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
     </BrowserRouter>
