@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Home } from './pages/Home'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -18,7 +19,7 @@ function AppContent(){
   return (
     <BrowserRouter>
     <nav>
-      <Link to="/home">Home / Categories</Link>
+      <Link to="/home">Home and Categories</Link>
       <Link to="/register">Invite or register</Link>
       {token ? (
         <button onClick={logout}>Logout</button>
@@ -43,8 +44,7 @@ function AppContent(){
         element={
           <ProtectedRoute>
             <div>
-              <h2>Categories home screen</h2>
-              <p>Functional baseline setup completed</p>
+              <Home />
             </div>
           </ProtectedRoute>
         }
