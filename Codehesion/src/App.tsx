@@ -6,6 +6,7 @@ import { Register } from './pages/Register';
 import { CategoryWordsView, Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { Tags } from './pages/Tags';
+import { ManageCategoryWords } from './pages/ManageCategoryWords';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
@@ -22,6 +23,7 @@ function AppContent(){
       <Link to="/register">Invite to register</Link>
       <Link to="/profile">Update profile</Link>
       <Link to="/tags">Tags CRUD</Link>
+      <Link to="/link-word">Link words</Link>
       
       {token ? (
         <button onClick={logout} style={{ marginLeft: 'auto' }}>Logout</button>
@@ -60,6 +62,8 @@ function AppContent(){
         } 
       />
       <Route path="/tags" element={<ProtectedRoute><Tags /></ProtectedRoute>} />
+
+      <Route path="/link-word" element={<ProtectedRoute><ManageCategoryWords /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
